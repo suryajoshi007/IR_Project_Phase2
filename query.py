@@ -113,7 +113,7 @@ class QueryProcessor:
         for token in tokens:
 
             if not token in self.index:
-                return res_struct
+                return { query: res_struct }
             
             plist.append(self.index[token])
 
