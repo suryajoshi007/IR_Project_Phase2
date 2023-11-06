@@ -73,7 +73,10 @@ class Indexer:
         d = {}
 
         for term in qterms:
-            d[term] = self.index[term].get_docId()
+            if term in self.index:
+                d[term] = self.index[term].get_docId()
+            else:
+                d[term] = []
         
         return {
             "postingsList": OrderedDict(
@@ -94,7 +97,10 @@ class Indexer:
         d = {}
 
         for term in qterms:
-            d[term] = self.index[term].get_docId_skip()
+            if term in self.index:
+                d[term] = self.index[term].get_docId_skip()
+            else:
+                d[term] = []
         
         return {
             "postingsListSkip": OrderedDict(

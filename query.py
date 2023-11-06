@@ -78,11 +78,7 @@ class QueryProcessor:
             
             if first.docId == second.docId:
                 
-                # TODO: what to do of the tf idf cal?
-                # both first and second have same docid but for different terms
-                # how to calculate tf-idf for resultant node?
-
-                # TODO: modify insert_end to insert tf_idf score
+                # insert_end to insert tf_idf score
                 res.insert_end(first.docId, tf_idf=(first.tf_idf + second.tf_idf))
 
                 first = first.next
@@ -217,14 +213,11 @@ if __name__ == "__main__":
 
     queryprocessor = QueryProcessor(input_corpus="./data/input_corpus.txt")
 
-
     queries = []
 
     with open("./data/queries.txt", 'r') as file:
         for query in file:
-            queries.append(query.strip()
-                           )
-
+            queries.append(query.strip())
 
     ans = queryprocessor.get_final_struct(queries=queries)
 

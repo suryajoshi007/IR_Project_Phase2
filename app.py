@@ -3,7 +3,7 @@ from query import QueryProcessor
 
 app = Flask(__name__)
 
-@app.before_first_request
+@app.before_request
 def initialize_query_processor():
     app.query_processor = QueryProcessor(
         input_corpus="./data/input_corpus.txt"
