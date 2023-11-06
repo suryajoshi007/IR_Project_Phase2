@@ -6,6 +6,7 @@ import nltk
 from typing import List, Dict
 from preprocessor import Preprocessor
 from postinglist import PostingList
+import math
 
 nltk.download('stopwords')
 
@@ -51,7 +52,11 @@ class Indexer:
             posting_list.insert_skip_pointers()
 
             posting_list.idf = total_doc_count / posting_list.length
+
+            # posting_list.idf = math.log(total_doc_count / (posting_list.length + 1))
+
             posting_list.calculate_tf_idf()
+    
 
     def get_index(self):
         return self.index
@@ -92,7 +97,7 @@ class Indexer:
             d[term] = self.index[term].get_docId_skip()
         
         return {
-            "postingsList": OrderedDict(
+            "postingsListSkip": OrderedDict(
                 sorted(d.items(), key=lambda x: x[0])
             )
         }

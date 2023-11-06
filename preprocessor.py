@@ -40,7 +40,7 @@ class Preprocessor:
         tokens = [
             self.ps.stem(token)
             for token in tokens
-            if token not in self.stop_words
+            if token and token not in self.stop_words
         ]
 
 

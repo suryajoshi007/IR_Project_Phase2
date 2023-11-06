@@ -20,10 +20,11 @@ class PostingList:
         self.n_skips = 0
         self.idf = 0.0
 
-    def insert_end(self, docId, tf):
+    def insert_end(self, docId, tf=0.0, tf_idf=0.0):
 
         node = Node(docId)
         node.tf = tf
+        node.tf_idf = tf_idf
 
         if not self.start_node:
             self.start_node = node
@@ -80,7 +81,7 @@ class PostingList:
                 head.tf_idf = head.tf * self.idf
                 head = head.next
 
-    def get_docId(self) -> List:
+    def get_docId(self, sort=False) -> List:
 
         """
         get a list of docIds from a posting list
@@ -95,6 +96,9 @@ class PostingList:
         while head:
             ans.append((head.docId, head.tf_idf))
             head = head.next
+
+        if sort:
+            ans.sort(key = lambda x: x[1], reverse=True)
 
         ans = [entry[0] for entry in ans]
         
@@ -123,32 +127,6 @@ class PostingList:
         ans = [entry[0] for entry in ans]
         
         return ans
-
-    def get_sorted_docId(self) -> List:
-
-        """
-        get a list of docIds from a posting list, sorted by tf-idf
-        """
-        
-        ans = []
-
-        if self.length == 0:
-            return ans
-
-        head = self.start_node
-        while head:
-            ans.append((head.docId, head.tf_idf))
-            head = head.next
-
-        ans.sort(key = lambda x: x[1])
-
-        ans = [entry[0] for entry in ans]
-        
-        return ans
-    
-
-
-
 
         
 

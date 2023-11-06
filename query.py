@@ -43,8 +43,7 @@ class QueryProcessor:
                 # both first and second have same docid but for different terms
                 # how to calculate tf-idf for resultant node?
 
-                # TODO: modify insert_end to insert tf_idf score
-                res.insert_end(first.docId, first.tf_idf)
+                res.insert_end(first.docId, tf_idf=(first.tf_idf + second.tf_idf))
 
                 first = first.next
                 second = second.next
@@ -84,7 +83,7 @@ class QueryProcessor:
                 # how to calculate tf-idf for resultant node?
 
                 # TODO: modify insert_end to insert tf_idf score
-                res.insert_end(first.docId, first.tf_idf)
+                res.insert_end(first.docId, tf_idf=(first.tf_idf + second.tf_idf))
 
                 first = first.next
                 second = second.next
@@ -150,44 +149,89 @@ class QueryProcessor:
         final_res[query] = res_struct
         final_res[query]["num_comparisons"] = comparison_count
         final_res[query]["num_docs"] = res.length
-        final_res[query]["results"] = res.get_sorted_docId()
+        final_res[query]["results"] = res.get_docId(sort=sort)
 
         return final_res
+    
+    def get_final_struct(self, queries):
+
+        queries.sort()
+
+        res_struct = OrderedDict()
+
+        res_struct["Response"] = {}
+
+        # get posting lists
+        postingslist = self.indexer.get_postinglists(queries=queries)
+        res_struct["Response"]["postingsList"] = postingslist["postingsList"]
+        # print(json.dumps(postingslist, indent=4))
+
+
+        res_struct["Response"]["daatAnd"] = {}
+
+        # daatAnd op
+        for query in queries:
+            res = self.daatAnd(query)
+            res_struct["Response"]["daatAnd"][query] = res[query].copy()
+            # print(json.dumps(res, indent = 4))
+
+        
+
+        # get postinglists with skip pointers
+        postingslistskip = self.indexer.get_postinglistsskip(queries=queries)
+        res_struct["Response"]["postingsListSkip"] = postingslistskip["postingsListSkip"]
+        # print(json.dumps(postingslistskip, indent=4))
+
+
+        res_struct["Response"]["daatAndSkip"] = {}
+        # daatAndSkip op
+        for query in queries:
+            res = self.daatAnd(query, skip=True)
+            res_struct["Response"]["daatAndSkip"][query] = res[query].copy()
+            # print(json.dumps(res, indent = 4))
+
+
+        res_struct["Response"]["daatAndTfIdf"] = {}
+
+        # daatAndTfIdf op
+        for query in queries:
+            res = self.daatAnd(query, sort=True)
+            res_struct["Response"]["daatAndTfIdf"][query] = res[query].copy()
+            # print(json.dumps(res, indent = 4))
+
+        res_struct["Response"]["daatAndSkipTfIdf"] = {}
+
+        # daatAndSkipTfIdf op
+        for query in queries:
+            res = self.daatAnd(query, skip=True, sort=True)
+            res_struct["Response"]["daatAndSkipTfIdf"][query] = res[query].copy()
+            # print(json.dumps(res, indent = 4))
+
+        return res_struct
+
+
 
 
 
 if __name__ == "__main__":
 
-    queryprocessor = QueryProcessor(input_corpus="./data/input_sample.txt")
-
-    queries = [
-        "hello world",
-        "hello swimming",
-        "swimming going",
-        "random swimming"
-    ]
-
-    # get posting lists
-    postingslist = queryprocessor.indexer.get_postinglists(queries=queries)
-    print(json.dumps(postingslist, indent=4))
+    queryprocessor = QueryProcessor(input_corpus="./data/input_corpus.txt")
 
 
-    # daatAnd op
-    for query in queries:
+    queries = []
 
-        
-        res = queryprocessor.daatAnd(query)
-        print(json.dumps(res, indent = 4))
+    with open("./data/queries.txt", 'r') as file:
+        for query in file:
+            queries.append(query.strip()
+                           )
 
-    # get postinglists with skip pointers
 
-    postingslistskip = queryprocessor.indexer.get_postinglistsskip(queries=queries)
-    print(json.dumps(postingslistskip, indent=4))
+    ans = queryprocessor.get_final_struct(queries=queries)
 
-    # daatAndSkip op
-    for query in queries:
+    print(json.dumps(ans, indent=4))
 
-        res = queryprocessor.daatAnd(query, skip=True)
-        print(json.dumps(res, indent = 4))
+    with open("./data/new_output.json", 'w') as json_file:
+        json.dump(ans, json_file, indent=4)
 
+    
 
