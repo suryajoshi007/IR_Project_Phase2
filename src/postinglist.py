@@ -37,10 +37,10 @@ class PostingList:
 
     def insert_skip_pointers(self):
 
-        print(f"Inserting skip pointers")
+        # print(f"Inserting skip pointers")
 
         if self.length < 3:
-            print("Length less than 3. Not Inserting skip pointers")
+            # print("Length less than 3. Not Inserting skip pointers")
             return
 
         self.n_skips = math.floor(math.sqrt(self.length))
@@ -69,7 +69,7 @@ class PostingList:
                 head = head.next
                 gap -= 1
         
-        print(f"Inserted no of skip pointers: {pointer_count}, Expected: {self.n_skips}")
+        # print(f"Inserted no of skip pointers: {pointer_count}, Expected: {self.n_skips}")
 
     def calculate_tf_idf(self):
 
@@ -116,7 +116,7 @@ class PostingList:
             return ans
 
         head = self.start_node
-        print(f"nskip: {self.n_skips}")
+        # print(f"nskip: {self.n_skips}")
         while head:
             ans.append((head.docId, head.tf_idf))
             head = head.skip_pointer
